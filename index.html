@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTC Quiz – English Tenses</title>
+ 
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+ 
+<style>
+:root {
+  --blue:   #4361EE;
+  --orange: #FF6B35;
+  --lime:   #C8FF00;
+  --pink:   #FF3D8A;
+  --white:  #FFFFFF;
+  --off:    #F5F4FF;
+  --dark:   #111118;
+  --grey:   #6B6B80;
+  --light:  #EDEDF7;
+  --green:  #25D366;
+}
+ 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--off);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent, transparent 18px,
+    rgba(67,97,238,0.045) 18px, rgba(67,97,238,0.045) 19px
+  );
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+}
+ 
+.app { width: 430px; max-width: 95vw; }
+ 
+/* ── Screens ── */
+.screen { display: none; }
+.screen.active {
+  display: block;
+  animation: popIn 0.42s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.92) translateY(18px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+ 
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border: 3px solid var(--dark);
+  border-radius: 24px;
+  padding: 32px 28px;
+  box-shadow: 8px 8px 0px var(--dark);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--blue), var(--pink), var(--orange), var(--lime));
+}
+ 
+/* ── Logo ── */
+.logo {
+  width: 72px; height: 72px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 3px solid var(--dark);
+  box-shadow: 3px 3px 0 var(--dark);
+  margin-bottom: 14px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+ 
+/* ── Chip ── */
+.chip {
+  display: inline-block;
+  background: var(--lime);
+  color: var(--dark);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 50px;
+  border: 2px solid var(--dark);
+  box-shadow: 2px 2px 0 var(--dark);
+  margin-bottom: 14px;
+}
+ 
+/* ── Type ── */
+h2 {
+  font-family: 'Righteous', cursive;
+  font-size: 28px;
+  color: var(--dark);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+p.sub { font-size: 14px; color: var(--grey); font-weight: 500; margin-bottom: 20px; }
+ 
+/* ── Input ── */
+.input-field {
+  width: 100%;
+  padding: 13px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: var(--dark);
+  background: var(--off);
+  border: 2.5px solid var(--dark);
+  border-radius: 14px;
+  outline: none;
+  box-shadow: 3px 3px 0 var(--dark);
+  transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s;
+  margin-bottom: 18px;
+}
+.input-field:focus {
+  box-shadow: 3px 3px 0 var(--blue);
+  border-color: var(--blue);
+  transform: translate(-1px,-1px);
+}
+.input-field::placeholder { color: #aaa; font-weight: 500; }
+ 
+/* ── Buttons ── */
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 14px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 800;
+  border: 2.5px solid var(--dark);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow: 4px 4px 0 var(--dark);
+  margin-top: 10px;
+}
+.btn:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+.btn:active { transform: translate(2px,2px);   box-shadow: 2px 2px 0 var(--dark); }
+ 
+.btn-blue   { background: var(--blue);   color: white; }
+.btn-lime   { background: var(--lime);   color: var(--dark); }
+.btn-pink   { background: var(--pink);   color: white; position: relative; overflow: hidden; }
+.btn-green  { background: var(--green);  color: white; }
+.btn-ghost  {
+  background: transparent; color: var(--grey);
+  border-color: var(--light); box-shadow: 4px 4px 0 var(--light);
+}
+.btn-ghost:hover { border-color: var(--dark); color: var(--dark); box-shadow: 4px 4px 0 var(--dark); }
+ 
+/* ── Info pills ── */
+.info-strip {
+  display: flex; flex-wrap: wrap;
+  justify-content: center; gap: 8px;
+  margin: 16px 0 22px;
+}
+.info-pill {
+  background: var(--off); border: 2px solid var(--dark);
+  border-radius: 50px; padding: 5px 14px;
+  font-size: 12px; font-weight: 700;
+  color: var(--dark); box-shadow: 2px 2px 0 var(--dark);
+}
+ 
+/* ── Progress ── */
+.progress-wrap { margin-bottom: 22px; }
+.progress-meta {
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-weight: 800;
+  color: var(--dark); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+.progress-track {
+  height: 10px; background: var(--light);
+  border-radius: 50px; border: 2px solid var(--dark); overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--pink));
+  border-radius: 50px; width: 0%;
+  transition: width 0.5s cubic-bezier(.34,1.2,.64,1);
+}
+ 
+/* ── Question ── */
+.question-text {
+  font-family: 'Righteous', cursive;
+  font-size: 20px; color: var(--dark);
+  line-height: 1.5; margin-bottom: 20px;
+  min-height: 60px; text-align: left;
+}
+ 
+/* ── Options ── */
+.options-grid { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+ 
+.option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  background: var(--white);
+  border: 2.5px solid var(--dark); border-radius: 14px;
+  cursor: pointer; font-size: 14px; font-weight: 700; color: var(--dark);
+  box-shadow: 3px 3px 0 var(--dark);
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s, border-color 0.15s;
+  animation: slideIn 0.3s cubic-bezier(.34,1.3,.64,1) backwards;
+}
+.option:nth-child(1) { animation-delay: 0.05s; }
+.option:nth-child(2) { animation-delay: 0.10s; }
+.option:nth-child(3) { animation-delay: 0.15s; }
+.option:nth-child(4) { animation-delay: 0.20s; }
+ 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+ 
+.option:hover {
+  transform: translate(-2px,-2px);
+  box-shadow: 5px 5px 0 var(--blue);
+  border-color: var(--blue); background: #F0F3FF;
+}
+.option-letter {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--off); border: 2px solid var(--dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; flex-shrink: 0;
+  font-family: 'Righteous', cursive;
+  transition: background 0.15s, border-color 0.15s;
+}
+.option.correct {
+  background: #EAFFDA; border-color: #3DB838;
+  box-shadow: 3px 3px 0 #3DB838; transform: none;
+}
+.option.correct .option-letter { background: #3DB838; border-color: #3DB838; color: white; }
+.option.wrong {
+  background: #FFEAEA; border-color: var(--pink);
+  box-shadow: 3px 3px 0 var(--pink); transform: none;
+}
+.option.wrong .option-letter { background: var(--pink); border-color: var(--pink); color: white; }
+ 
+/* ── Explanation ── */
+.expl-box {
+  display: none; margin-top: 16px;
+  background: #FFFBE6; border: 2.5px solid var(--orange);
+  border-radius: 14px; padding: 13px 16px;
+  font-size: 13px; font-weight: 600; color: #6B4500;
+  text-align: left; line-height: 1.6;
+  box-shadow: 3px 3px 0 var(--orange);
+}
+.expl-box.show { display: block; animation: popIn 0.3s cubic-bezier(.34,1.3,.64,1); }
+.expl-tag {
+  font-family: 'Righteous', cursive; color: var(--orange);
+  font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; display: block; margin-bottom: 4px;
+}
+ 
+/* ── Score ── */
+.score-block { margin: 10px 0 18px; }
+.score-number {
+  font-family: 'Righteous', cursive; font-size: 76px;
+  color: var(--blue); line-height: 1;
+  text-shadow: 4px 4px 0 var(--dark);
+}
+.score-denom { font-size: 20px; font-weight: 800; color: var(--grey); }
+.score-pct {
+  display: inline-block; margin-top: 6px;
+  font-size: 13px; font-weight: 800;
+  padding: 4px 16px; border-radius: 50px;
+  border: 2px solid var(--dark); box-shadow: 2px 2px 0 var(--dark);
+}
+ 
+/* ── Feedback box ── */
+.fb-box {
+  background: var(--off); border: 2.5px solid var(--dark);
+  border-radius: 16px; padding: 16px; margin: 14px 0;
+  box-shadow: 4px 4px 0 var(--dark); text-align: left;
+}
+.fb-box .fb-emoji { font-size: 28px; margin-bottom: 6px; display: block; }
+.fb-box strong {
+  font-family: 'Righteous', cursive; font-size: 18px;
+  color: var(--dark); display: block; margin-bottom: 4px;
+}
+.fb-box p { font-size: 13px; color: var(--grey); margin: 0; font-weight: 600; line-height: 1.5; }
+ 
+/* ── Divider ── */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 22px 0; color: var(--grey);
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 2px;
+  background: var(--light); border-radius: 2px;
+}
+ 
+/* ── Reviews head ── */
+.rev-head { margin-bottom: 16px; }
+.rev-head .r-emoji { font-size: 28px; margin-bottom: 8px; }
+.rev-head h3 { font-family: 'Righteous', cursive; font-size: 22px; color: var(--dark); margin-bottom: 4px; }
+.rev-head p { font-size: 12px; font-weight: 600; color: var(--grey); }
+ 
+/* ── Burst particles ── */
+.sburst {
+  position: absolute; font-size: 14px;
+  pointer-events: none;
+  animation: burstAnim 750ms forwards;
+}
+@keyframes burstAnim {
+  0%   { opacity: 1; transform: translate(0,0) scale(1.3) rotate(0deg); }
+  100% { opacity: 0; transform: translate(var(--bx),var(--by)) scale(0) rotate(180deg); }
+}
+ 
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+ 
+<div class="app">
+ 
+  <!-- ══ NAME ══ -->
+  <div id="nameScreen" class="screen active">
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;">
+      <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo" alt="TTC">
+      <div class="chip">✦ TTC Wardha</div>
+      <h2>Hey there!<br>What's your name?</h2>
+      <p class="sub">Enter your name to start the quiz 🎯</p>
+      <input id="username" class="input-field" type="text"
+        placeholder="Your full name..." autocomplete="off">
+      <button class="btn btn-blue" onclick="startWelcome()">Continue →</button>
+    </div>
+  </div>
+ 
+  <!-- ══ WELCOME ══ -->
+  <div id="welcomeScreen" class="screen">
+    <div class="card">
+      <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo" alt="TTC">
+      <div class="chip">✦ You're up!</div>
+      <h2 id="welcomeText"></h2>
+      <p class="sub">Ready to prove yourself? 💪</p>
+      <div class="info-strip">
+        <div class="info-pill">📖 English – Mixed</div>
+        <div class="info-pill">35 Questions</div>
+        <div class="info-pill">🏆 Scored</div>
+        <div class="info-pill">⏱ Self-paced</div>
+      </div>
+      <button class="btn btn-blue" onclick="startQuiz()">Start Quiz 🚀</button>
+    </div>
+  </div>
+ 
+  <!-- ══ QUIZ ══ -->
+  <div id="quizScreen" class="screen">
+    <div class="card">
+      <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo" alt="TTC">
+ 
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span id="qCounter">Q 1 / 35</span>
+          <span id="qScore">Score: 0</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+      </div>
+ 
+      <p class="question-text" id="question"></p>
+      <div class="options-grid" id="options"></div>
+ 
+      <div class="expl-box" id="explBox">
+        <span class="expl-tag">💡 Explanation</span>
+        <span id="explText"></span>
+      </div>
+ 
+      <br>
+      <button id="nextBtn" class="btn btn-blue hidden" onclick="nextQuestion()">
+        Next Question →
+      </button>
+    </div>
+  </div>
+ 
+  <!-- ══ RESULT ══ -->
+  <div id="resultScreen" class="screen">
+    <div class="card">
+      <img src="https://i.ibb.co/dsBdtCwK/Ttc-logo.png" class="logo" alt="TTC">
+      <div class="chip" id="resultChip">✦ Quiz Done!</div>
+ 
+      <div class="score-block">
+        <div>
+          <span class="score-number" id="scoreNum">0</span>
+          <span class="score-denom" id="scoreDenom">/35</span>
+        </div>
+        <div class="score-pct" id="scorePct">0%</div>
+      </div>
+ 
+      <div class="fb-box">
+        <span class="fb-emoji" id="fbEmoji"></span>
+        <strong id="fbTitle"></strong>
+        <p id="fbMsg"></p>
+      </div>
+ 
+      <button class="btn btn-green"  onclick="shareWhatsApp()">📤 Share on WhatsApp</button>
+      <button id="ratingBtn" class="btn btn-pink">⭐ Rate Us on Google</button>
+      <button class="btn btn-ghost"  onclick="restartQuiz()">↺ Try Again</button>
+ 
+      <div class="divider">What others say</div>
+ 
+      <div class="rev-head">
+        <div class="r-emoji">🌟</div>
+        <h3>Loved by TTC Families</h3>
+        <p>Real reviews from students &amp; parents across Wardha</p>
+      </div>
+ 
+      <a href="https://g.page/r/CdUkswJ0ZulAEBE/review" target="_blank"
+        class="btn btn-lime" style="display:block;text-align:center;">
+        ✍️ Give Us a Review
+      </a>
+ 
+      <div style="margin-top:20px;">
+        <div class="famewall-embed"
+          data-src="https---maps-app-goo-gl-CCkEWRVgjbvHpQmLA"
+          data-format="grid"
+          style="width:100%;min-height:300px;">
+        </div>
+        <script type="text/javascript" src="https://embed.famewall.io/frame.js" defer></script>
+      </div>
+ 
+    </div>
+  </div>
+ 
+</div>
+ 
+<script>
+const subjectName = "English"
+const chapterName = "Mixed"
+ 
+const quizData = [
+  {
+    question: "Who said the phrase, \"Only six hundred pieces of silver\"?",
+    options: ["The merchant","The slave dealer","The merchant's wife","Kafur"],
+    correct: "The slave dealer",
+    explanation: "The slave dealer stated this price to the merchant when offering him for sale."
+  },
+  {
+    question: "According to the slave dealer, how often does Kafur tell a lie?",
+    options: ["One lie a day","One lie a month","One lie a year","He never lies"],
+    correct: "One lie a year",
+    explanation: "The slave dealer warned the merchant that Kafur always tells one lie a year."
+  },
+  {
+    question: "Who said, \"Come Kafur and help me mourn\"?",
+    options: ["The merchant","The slave dealer","The merchant's wife","The villagers"],
+    correct: "The merchant's wife",
+    explanation: "The merchant's wife called upon Kafur to help her mourn."
+  },
+  {
+    question: "What did the merchant love doing in the market?",
+    options: ["Selling goods","Gossiping","Bargaining","Buying jewelry"],
+    correct: "Bargaining",
+    explanation: "The merchant loved to bargain."
+  },
+  {
+    question: "Who had two daughters from her first marriage?",
+    options: ["Cinderella's mother","Cinderella's stepmother","Cinderella's fairy godmother","Cinderella's aunt"],
+    correct: "Cinderella's stepmother",
+    explanation: "Cinderella's stepmother had two daughters from her first marriage who were ugly and jealous."
+  },
+  {
+    question: "Who advised Cinderella to come back home before midnight?",
+    options: ["Her father","Her stepmother","Her stepsisters","Her fairy godmother"],
+    correct: "Her fairy godmother",
+    explanation: "Her fairy godmother advised Cinderella to return before midnight."
+  },
+  {
+    question: "What were the horses and dog turned into for Cinderella's carriage?",
+    options: ["Footmen","Attendants","Drivers","Guards"],
+    correct: "Attendants",
+    explanation: "The horses and a dog were turned into attendants."
+  },
+  {
+    question: "What responsibility was Amit appointed to, which made his parents feel proud and happy?",
+    options: ["Class Monitor","Sports Captain","Discipline Incharge","Head Boy"],
+    correct: "Discipline Incharge",
+    explanation: "Amit was appointed as the discipline incharge."
+  },
+  {
+    question: "What was Amit supposed to do when a teacher was not present in the classroom?",
+    options: ["Take attendance","Make sure the students remained quiet","Teach the lesson","Collect homework"],
+    correct: "Make sure the students remained quiet",
+    explanation: "Amit had to make sure that when a teacher was not there, the students of the class should remain quiet."
+  },
+  {
+    question: "Which student always talked in the class?",
+    options: ["Amit","Nitin","Kafur","Gabito"],
+    correct: "Nitin",
+    explanation: "Nitin always talked in the class."
+  },
+  {
+    question: "At what age did the narrator first see Dr. Alfredo Barboza?",
+    options: ["As a teenager","Ten or eleven years old","Five or six years old","As a young man"],
+    correct: "Five or six years old",
+    explanation: "The narrator had seen him for the first time when they were five or six years old."
+  },
+  {
+    question: "What physical feature was particularly striking about Dr. Barboza?",
+    options: ["He was short and stout","He had intense blue eyes","He had intense yellow eyes and beautiful hair","He had a long white beard"],
+    correct: "He had intense yellow eyes and beautiful hair",
+    explanation: "He was tall and thin with beautiful hair and intense yellow eyes."
+  },
+  {
+    question: "Why did the narrator secretly enter Dr. Barboza's garden during childhood?",
+    options: ["To play with friends","To meet Dr. Barboza","To steal apples","To steal mangoes"],
+    correct: "To steal mangoes",
+    explanation: "The narrator entered secretly into the garden to steal mangoes."
+  },
+  {
+    question: "What did the narrator consider Dr. Barboza to be during their childhood?",
+    options: ["A kind teacher","A personal ghost","A grumpy neighbor","A famous writer"],
+    correct: "A personal ghost",
+    explanation: "The narrator refers to Dr. Barboza by saying, \"He was my personal ghost\"."
+  },
+  {
+    question: "What did the narrator ultimately want to become?",
+    options: ["A doctor","A teacher","A writer","A scientist"],
+    correct: "A writer",
+    explanation: "The narrator wanted to become a writer."
+  },
+  {
+    question: "What kind of boy was Thomas Alva Edison described as in the poem?",
+    options: ["An ordinary boy","An unusual boy","A playful boy","A foolish boy"],
+    correct: "An unusual boy",
+    explanation: "The poem describes Thomas Alva Edison as a \"most unusual boy\"."
+  },
+  {
+    question: "What skill did Edison learn while working as a newsboy on a train?",
+    options: ["How to drive the train","How to sell newspapers faster","How to telegraph","How to build a laboratory"],
+    correct: "How to telegraph",
+    explanation: "He worked as a newsboy on a train and learnt to telegraph."
+  },
+  {
+    question: "Who asked, \"What on earth has happened?\"",
+    options: ["The merchant","The merchant's wife","Kafur","The slave dealer"],
+    correct: "The merchant",
+    explanation: "The merchant said this to Kafur."
+  },
+  {
+    question: "Who said the words, \"Oh! You be safe\"?",
+    options: ["Kafur","The merchant","The merchant's wife","The slave dealer"],
+    correct: "The merchant's wife",
+    explanation: "The merchant's wife asked this to the merchant."
+  },
+  {
+    question: "Who asked the question, \"How much is this slave?\"",
+    options: ["The merchant's wife","The merchant","The slave dealer","Kafur"],
+    correct: "The merchant",
+    explanation: "The merchant said this to the slave dealer."
+  },
+  {
+    question: "Who exclaimed, \"That's very good! Congratulations!\"?",
+    options: ["Amit's teacher","Amit's father","Amit's mother","Amit's friend"],
+    correct: "Amit's mother",
+    explanation: "Amit's mother said this to Amit."
+  },
+  {
+    question: "Who said, \"So you are the great Gabito\"?",
+    options: ["The narrator","Dr. Alfredo Barboza","The narrator's mother","A teacher"],
+    correct: "Dr. Alfredo Barboza",
+    explanation: "Dr. Barboza said this to the narrator."
+  },
+  {
+    question: "In which city was the merchant walking through the market when he saw a slave for sale?",
+    options: ["Baghdad","Cairo","Damascus","Istanbul"],
+    correct: "Cairo",
+    explanation: "The merchant was walking through a market in Cairo when he saw a slave for sale."
+  },
+  {
+    question: "What was the only option left for Kafur after telling his lie?",
+    options: ["To apologize","To pay a fine","To leave the place","To go to jail"],
+    correct: "To leave the place",
+    explanation: "Kafur had no other option rather than to leave the place."
+  },
+  {
+    question: "When did Cinderella run away from the ball?",
+    options: ["At sunset","At midnight (when the clock struck twelve)","At dawn","When the prince asked her name"],
+    correct: "At midnight (when the clock struck twelve)",
+    explanation: "Cinderella ran when the clock struck twelve."
+  },
+  {
+    question: "At the end of the competition or event, what did Amit's house win?",
+    options: ["A gold medal","A certificate","The trophy","A cash prize"],
+    correct: "The trophy",
+    explanation: "At the end, Amit's house won the trophy."
+  },
+  {
+    question: "Who gave Amit a good piece of advice regarding discipline?",
+    options: ["His teacher","His mother","His father","The principal"],
+    correct: "His father",
+    explanation: "Amit's father gave him a good piece of advice."
+  },
+  {
+    question: "How did the other children escape from Dr. Barboza's garden?",
+    options: ["Over the wall","Through an opening in the fence","Through the front gate","By climbing a tree"],
+    correct: "Through an opening in the fence",
+    explanation: "The others escaped through an opening in the fence."
+  },
+  {
+    question: "Who is Dr. Alfredo Barboza?",
+    options: ["A young man","An old man","A ghost","A tall, muscular man"],
+    correct: "An old man",
+    explanation: "Dr. Alfredo Barboza is an old man."
+  },
+  {
+    question: "Who did Dr. Barboza recognize at first?",
+    options: ["The narrator's mother","The narrator","Gabito","Amit"],
+    correct: "Gabito",
+    explanation: "Dr. Barboza at first recognized Gabito."
+  },
+  {
+    question: "What is \"ebony\"?",
+    options: ["A hard white substance from elephant tusks","A hard, black wood","A precious metal","A type of string bed"],
+    correct: "A hard, black wood",
+    explanation: "Ebony is defined as a hard, black wood."
+  },
+  {
+    question: "What is a \"hammock\"?",
+    options: ["A kind of string bed hung from posts or trees","A small shed built in the grounds","A ghost or spirit","A building made of stone"],
+    correct: "A kind of string bed hung from posts or trees",
+    explanation: "A hammock is a kind of string bed hung from posts or trees at both ends."
+  },
+  {
+    question: "What is the meaning of the word \"consequence\"?",
+    options: ["A mean person","To feel and show sorrow","Something that happens because of an event or action","To escape without punishment"],
+    correct: "Something that happens because of an event or action",
+    explanation: "Consequence is defined as something that happens because of an event or action."
+  },
+  {
+    question: "What is the opposite of \"proud\"?",
+    options: ["Humble or Kind","Ashamed or Disappointed","Ugly or dull","Sad or Depressed"],
+    correct: "Ashamed or Disappointed",
+    explanation: "The opposites of proud are disappointed or ashamed."
+  },
+  {
+    question: "What does TTC stand for?",
+    options: ["The Tutoring Center","Tushar Tuition Classes","Technical Training College","Teachers Training Camp"],
+    correct: "Tushar Tuition Classes",
+    explanation: "TTC stands for Tushar Tuition Classes."
+  }
+]
+ 
+let username = localStorage.getItem("ttc_name") || ""
+let questions = [], index = 0, score = 0
+const letters = ["A","B","C","D"]
+ 
+if (username) document.getElementById("username").value = username
+ 
+document.getElementById("username").addEventListener("keydown", e => {
+  if (e.key === "Enter") startWelcome()
+})
+ 
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
+ 
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"))
+  const el = document.getElementById(id)
+  el.classList.remove("active")
+  void el.offsetWidth
+  el.classList.add("active")
+}
+ 
+function startWelcome() {
+  username = document.getElementById("username").value.trim()
+  if (!username) {
+    const inp = document.getElementById("username")
+    inp.style.borderColor = "var(--pink)"
+    inp.style.boxShadow = "3px 3px 0 var(--pink)"
+    inp.placeholder = "Please enter your name! 👆"
+    inp.focus()
+    return
+  }
+  localStorage.setItem("ttc_name", username)
+  document.getElementById("welcomeText").innerText = "Let's go, " + username + "!"
+  show("welcomeScreen")
+}
+ 
+function startQuiz() {
+  questions = shuffle(quizData)
+  index = 0; score = 0
+  show("quizScreen")
+  loadQuestion()
+}
+ 
+function loadQuestion() {
+  const q = questions[index]
+  const opts = shuffle([...q.options])
+ 
+  document.getElementById("qCounter").innerText = `Q ${index+1} / ${questions.length}`
+  document.getElementById("qScore").innerText = `Score: ${score}`
+  document.getElementById("progressBar").style.width = ((index / questions.length) * 100) + "%"
+  document.getElementById("question").innerText = q.question
+ 
+  const container = document.getElementById("options")
+  container.innerHTML = ""
+  opts.forEach((opt, i) => {
+    const div = document.createElement("div")
+    div.className = "option"
+    div.innerHTML = `<span class="option-letter">${letters[i]}</span><span class="opt-text">${opt}</span>`
+    div.onclick = () => selectOption(div, opt, q)
+    container.appendChild(div)
+  })
+ 
+  document.getElementById("explBox").classList.remove("show")
+  document.getElementById("explText").innerText = ""
+  document.getElementById("nextBtn").classList.add("hidden")
+}
+ 
+function selectOption(el, opt, q) {
+  document.querySelectorAll(".option").forEach(o => o.onclick = null)
+ 
+  if (opt === q.correct) {
+    el.classList.add("correct")
+    score++
+    confetti({
+      particleCount: 100, spread: 70, origin: { y: 0.55 },
+      colors: ["#4361EE","#C8FF00","#FF3D8A","#FF6B35","#ffffff"]
+    })
+  } else {
+    el.classList.add("wrong")
+    document.querySelectorAll(".option").forEach(o => {
+      if (o.querySelector(".opt-text")?.innerText.trim() === q.correct) o.classList.add("correct")
+    })
+  }
+ 
+  document.getElementById("explText").innerText = q.explanation
+  document.getElementById("explBox").classList.add("show")
+  document.getElementById("qScore").innerText = `Score: ${score}`
+  document.getElementById("nextBtn").classList.remove("hidden")
+}
+ 
+function nextQuestion() {
+  index++
+  if (index >= questions.length) { showResult(); return }
+  loadQuestion()
+}
+ 
+function showResult() {
+  show("resultScreen")
+  const total = questions.length
+  const pct = Math.round((score / total) * 100)
+ 
+  document.getElementById("scoreNum").innerText = score
+  document.getElementById("scoreDenom").innerText = `/${total}`
+  document.getElementById("scorePct").innerText = pct + "%"
+ 
+  let emoji, title, msg, chipText, pctBg
+ 
+  if (pct >= 90) {
+    emoji = "🔥"; title = "Absolutely Smashed It!"; pctBg = "#EAFFDA"
+    msg = "Perfect! Outstanding performance, " + username + ". Top of the class!"
+    chipText = "✦ Outstanding"
+  } else if (pct >= 75) {
+    emoji = "💪"; title = "Really Well Done!"; pctBg = "#E0F0FF"
+    msg = "Strong performance, " + username + "! A little more practice and you'll be perfect."
+    chipText = "✦ Well Done"
+  } else if (pct >= 50) {
+    emoji = "📚"; title = "Good Effort!"; pctBg = "#FFF8DC"
+    msg = "You're on the right track, " + username + ". Keep revising and you'll ace it!"
+    chipText = "✦ Keep Going"
+  } else {
+    emoji = "🧐"; title = "Time to Revise!"; pctBg = "#FFEAEA"
+    msg = "Don't worry, " + username + " — go through the chapters once more and try again!"
+    chipText = "✦ Try Again"
+  }
+ 
+  document.getElementById("fbEmoji").innerText = emoji
+  document.getElementById("fbTitle").innerText = title
+  document.getElementById("fbMsg").innerText = msg
+  document.getElementById("resultChip").innerText = chipText
+  document.getElementById("scorePct").style.background = pctBg
+ 
+  confetti({
+    particleCount: 180, spread: 110, origin: { y: 0.45 },
+    colors: ["#4361EE","#C8FF00","#FF3D8A","#FF6B35","#ffffff"]
+  })
+}
+ 
+function shareWhatsApp() {
+  const msg =
+`🎓 *TTC Quiz Result*
+ 
+👤 *Student:* ${username}
+📘 *Subject:* ${subjectName}
+📖 *Chapter:* ${chapterName}
+🏆 *Score:* ${score}/${questions.length}
+ 
+_Tushar Tuition Classes, Wardha_ 📚`
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg))
+}
+ 
+function restartQuiz() { location.reload() }
+ 
+document.getElementById("ratingBtn").addEventListener("click", function () {
+  for (let i = 0; i < 16; i++) {
+    const s = document.createElement("span")
+    s.className = "sburst"
+    s.innerText = ["★","✦","●","▲"][Math.floor(Math.random()*4)]
+    s.style.color = ["#C8FF00","#FF6B35","#4361EE","#FF3D8A"][Math.floor(Math.random()*4)]
+    s.style.setProperty("--bx", (Math.random()*160-80)+"px")
+    s.style.setProperty("--by", (Math.random()*-150)+"px")
+    s.style.left = (35 + Math.random()*30) + "%"
+    s.style.top = "50%"
+    this.appendChild(s)
+    setTimeout(() => s.remove(), 750)
+  }
+  setTimeout(() => window.open("https://g.page/r/CdUkswJ0ZulAEBE/review"), 320)
+})
+</script>
+ 
+</body>
+</html>
